@@ -1,8 +1,13 @@
 import {
   app,
   BrowserWindow,
-  session
+  session,
+  Tray,
+  Menu,
+  dialog
 } from 'electron'
+
+import pkg from './../../package'
 
 /**
  * Set `__static` path to static files in production
@@ -12,7 +17,7 @@ if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
 
-let mainWindow
+let mainWindow, tray, isHide = false;
 const winURL = process.env.NODE_ENV === 'development' ?
   `http://localhost:9080` :
   `file://${__dirname}/index.html`
@@ -42,6 +47,67 @@ function createWindow() {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
+  mainWindow.on('hide', () => {
+    isHide = true;
+  })
+  mainWindow.on('show', () => {
+    isHide = false;
+  })
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show()
+  })
+  createTray();
+}
+/**
+ * 定会最小化图标
+ *
+ * @return  {[type]}  [return description]
+ */
+function createTray() {
+  const menubarPic = process.platform === 'darwin' ? `${__static}/menubar_nodarwin_16.png` : `${__static}/menubar-nodarwin_16.png`
+  tray = new Tray(menubarPic) // 指定图片的路径
+  tray.on('right-click', (e) => { // 右键点击
+    if (!isHide)
+      mainWindow.hide() // 隐藏小窗口
+    else
+      mainWindow.show()
+  })
+
+  const contextMenu = Menu.buildFromTemplate([{
+      label: '置顶',
+      type: 'checkbox',
+      accelerator: 'CmdOrCtrl+T',
+      click(e) {
+        mainWindow.alwaysOnTop = e.checked;
+      },
+
+    },
+    {
+      label: '关于',
+      click() {
+        dialog.showMessageBox({
+          title: '地图助手',
+          message: '地图助手',
+          detail: `Version: ${pkg.version}\nAuthor: seelingzheng\nGithub: https://github.com/seelingzheng/map_helper`
+        })
+      }
+    },
+    {
+      type: 'separator'
+    }
+
+    , {
+      label: '退出',
+      accelerator: 'CmdOrCtrl+Q',
+      click() {
+        app.quit()
+      }
+    }
+  ]);
+
+
+  tray.setToolTip('地图助手')
+  tray.setContextMenu(contextMenu)
 }
 
 app.on('ready', createWindow)
