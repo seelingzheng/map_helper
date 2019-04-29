@@ -17,6 +17,8 @@
           <h5 @click="doCopy($event)">GPS:{{gpsValue}}</h5>
 
           <h5 @click="doCopy($event)">百度:{{bdValue}}</h5>
+          <hr>
+          <h5 @click="doCopy($event)">墨卡托:{{mktValue}}</h5>
         </div>
       </section>
     </panel>
@@ -46,6 +48,7 @@ import {
   gcj02towgs84,
   out_of_china
 } from "./../utils/exchange.js";
+import { toMercator } from "./../utils/projTrans";
 const electronLocalshortcut = require("electron-localshortcut");
 
 export default {
@@ -69,7 +72,8 @@ export default {
       pValue: "",
       gpsValue: "",
       bdValue: "",
-      gdValue: ""
+      gdValue: "",
+      mktValue: ""
     };
   },
   watch: {
@@ -128,7 +132,11 @@ export default {
       this.gpsValue = gcj02towgs84(point[0], point[1]).join(",");
       this.bdValue = gcj02tobd09(point[0], point[1]).join(",");
       this.gdValue = this.pValue;
-
+      var mktOjb = toMercator({
+        lng: point[0],
+        lat: point[1]
+      });
+      this.mktValue = Object.values(mktOjb).join(",");
       this.A.map.add(this.curMarker);
     },
     //获取并展示当前城市信息
