@@ -19,17 +19,15 @@ if (process.env.NODE_ENV !== 'development') {
 
 let mainWindow, tray, isHide = false;
 const winURL = process.env.NODE_ENV === 'development' ?
-  `http://localhost:9080` :
+  `http://localhost:9080/` :
   `file://${__dirname}/index.html`
-
+ 
 function createWindow() {
 
+  //
+  
+ 
 
-  // session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-  //   callback({
-  //     responseHeaders: `default-src 'self'`
-  //   })
-  // })
   /**
    * Initial window options
    */
@@ -43,6 +41,9 @@ function createWindow() {
   })
 
   mainWindow.loadURL(winURL)
+ 
+  addMenu();
+  
 
   mainWindow.on('closed', () => {
     mainWindow = null
@@ -56,7 +57,7 @@ function createWindow() {
   mainWindow.once('ready-to-show', () => {
     mainWindow.show()
   })
-  createTray();
+
 }
 /**
  * 定会最小化图标
@@ -74,35 +75,35 @@ function createTray() {
   })
 
   const contextMenu = Menu.buildFromTemplate([{
-      label: '置顶',
-      type: 'checkbox',
-      accelerator: 'CmdOrCtrl+T',
-      click(e) {
-        mainWindow.alwaysOnTop = e.checked;
-      },
+    label: '置顶',
+    type: 'checkbox',
+    accelerator: 'CmdOrCtrl+T',
+    click(e) {
+      mainWindow.alwaysOnTop = e.checked;
+    },
 
-    },
-    {
-      label: '关于',
-      click() {
-        dialog.showMessageBox({
-          title: '地图助手',
-          message: '地图助手',
-          detail: `Version: ${pkg.version}\nAuthor: seelingzheng\nGithub: https://github.com/seelingzheng/map_helper`
-        })
-      }
-    },
-    {
-      type: 'separator'
+  },
+  {
+    label: '关于',
+    click() {
+      dialog.showMessageBox({
+        title: '地图助手',
+        message: '地图助手',
+        detail: `Version: ${pkg.version}\nAuthor: seelingzheng\nGithub: https://github.com/seelingzheng/map_helper`
+      })
     }
+  },
+  {
+    type: 'separator'
+  }
 
     , {
-      label: '退出',
-      accelerator: 'CmdOrCtrl+Q',
-      click() {
-        app.quit()
-      }
+    label: '退出',
+    accelerator: 'CmdOrCtrl+Q',
+    click() {
+      app.quit()
     }
+  }
   ]);
 
 
@@ -124,24 +125,63 @@ app.on('activate', () => {
   }
 })
 
+function addMenu() { 
+  const template = [{
+    label: '工具',
+    submenu: [
+      {
+        label: '坐标点位', click() {
+          mainWindow.loadURL(winURL)
+        }
+      },
+      {
+        label: '三维地图', click() {
+          mainWindow.loadURL(`${winURL}#3d`)
+        }
+      },
+      // {
+      //   label: '超图三维', click() {
+      //     mainWindow.loadURL(`${winURL}#3d`)
+      //   }
+      // },
+      { type: 'separator' },
 
+      {
+        label: '退出',
+        accelerator: 'CmdOrCtrl+Q',
+        click() {
+          app.quit()
+        }
+      }
+    ]
+  },{
+  label:"Cesium",
+  submenu:[
+    {
+      label:"超图案例",
+      click(){
+        mainWindow.loadURL('http://support.supermap.com.cn:8090/webgl/examples/examples.html#layer')
+      }
+    },
+    {
+      label:"超图地图",
+      click(){
+        mainWindow.loadURL('http://www.supermapol.com/earth/')
+      }
+    },
+    { type: 'separator' },
+    {
+      label:"MarsGIS",
+      click(){
+        mainWindow.loadURL('http://cesium.marsgis.cn/examples.html?time=20190418#baselayer')
+      }
+    },
+  ]
+  }
+]
+  Menu.setApplicationMenu(null)
+  var menu = Menu.buildFromTemplate(template)
+  Menu.setApplicationMenu(menu);
+}
 
-/**
- * Auto Updater
- *
- * Uncomment the following code below and install `electron-updater` to
- * support auto updating. Code Signing with a valid certificate is required.
- * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-electron-builder.html#auto-updating
- */
-
-/*
-import { autoUpdater } from 'electron-updater'
-
-autoUpdater.on('update-downloaded', () => {
-  autoUpdater.quitAndInstall()
-})
-
-app.on('ready', () => {
-  if (process.env.NODE_ENV === 'production') autoUpdater.checkForUpdates()
-})
- */
+ 

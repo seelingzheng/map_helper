@@ -18,7 +18,7 @@
     "postinstall": ""
   },
   "build": {
-    "productName": "point_picker",
+    "productName": "地图助手",
     "appId": "ppicker.zhengqj.cc",
     "directories": {
       "output": "build"
@@ -53,9 +53,11 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "cesium": "^1.56.1",
     "electron-localshortcut": "^3.1.0",
     "element-ui": "^2.6.3",
     "fs": "0.0.1-security",
+    "fs-extra": "^7.0.1",
     "vue": "^2.5.16",
     "vue-electron": "^1.0.6",
     "vue-router": "^3.0.1",
@@ -63,6 +65,7 @@
     "vuex-electron": "^1.0.0"
   },
   "devDependencies": {
+    "@types/cesium": "^1.54.2",
     "ajv": "^6.5.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
@@ -73,7 +76,7 @@
     "babili-webpack-plugin": "^0.1.2",
     "cfonts": "^2.1.2",
     "chalk": "^2.4.1",
-    "copy-webpack-plugin": "^4.5.1",
+    "copy-webpack-plugin": "^4.6.0",
     "cross-env": "^5.1.6",
     "css-loader": "^0.28.11",
     "del": "^3.0.0",

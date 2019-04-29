@@ -5,8 +5,11 @@ process.env.BABEL_ENV = 'main'
 const path = require('path')
 const { dependencies } = require('../package.json')
 const webpack = require('webpack')
-
+ 
 const BabiliWebpackPlugin = require('babili-webpack-plugin')
+
+
+
 
 let mainConfig = {
   entry: {
@@ -26,7 +29,8 @@ let mainConfig = {
         test: /\.node$/,
         use: 'node-loader'
       }
-    ]
+    ],
+    unknownContextCritical: false
   },
   node: {
     __dirname: process.env.NODE_ENV !== 'production',
@@ -36,12 +40,15 @@ let mainConfig = {
     filename: '[name].js',
     libraryTarget: 'commonjs2',
     path: path.join(__dirname, '../dist/electron')
+    
   },
   plugins: [
-    new webpack.NoEmitOnErrorsPlugin()
+    new webpack.NoEmitOnErrorsPlugin(),
+    
   ],
   resolve: {
-    extensions: ['.js', '.json', '.node']
+    extensions: ['.js', '.json', '.node'],
+ 
   },
   target: 'electron-main'
 }
