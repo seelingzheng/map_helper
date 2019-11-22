@@ -9,6 +9,8 @@
         placeholder="点选或输入经度信息"
         v-model="pValue"
       ></el-input>
+      <label for="gps">
+      <el-checkbox id="gps"  v-model="isGPS"></el-checkbox></label>
       <section v-if="gdValue!=''">
         <h3>当前点位</h3>
         <div class="point-info">
@@ -73,7 +75,8 @@ export default {
       gpsValue: "",
       bdValue: "",
       gdValue: "",
-      mktValue: ""
+      mktValue: "",
+      isGPS:false
     };
   },
   watch: {
@@ -129,13 +132,29 @@ export default {
         position: point
       });
       this.pValue = point.join(",");
-      this.gpsValue = gcj02towgs84(point[0], point[1]).join(",");
-      this.bdValue = gcj02tobd09(point[0], point[1]).join(",");
-      this.gdValue = this.pValue;
-      var mktOjb = toMercator({
+      var mktOjb;
+      if(this.isGPS){
+         this.gpsValue = this.pValue; 
+         let gcj02 = wgs84togcj02(point[0], point[1]);
+      this.bdValue = gcj02tobd09(gcj02[0], gcj02[1]).join(",");
+      this.gdValue =gcj02.join(",");
+      
+        mktOjb = toMercator({
         lng: point[0],
         lat: point[1]
       });
+
+      }else{ 
+     
+      this.gpsValue = gcj02towgs84(point[0], point[1]).join(",");
+      this.bdValue = gcj02tobd09(point[0], point[1]).join(",");
+      this.gdValue = this.pValue;
+      
+        mktOjb = toMercator({
+        lng: point[0],
+        lat: point[1]
+      });
+       }
       this.mktValue = Object.values(mktOjb).join(",");
       this.A.map.add(this.curMarker);
     },
